@@ -28,6 +28,13 @@ print 'Top hit:', page_hits[0][0], page_hits[0][1]
 print 'Writing...'
 with open('en_search.log', 'wb') as log:
 	for i in range(100):
-		log.write(str(i) + page_hits[i][0] + '\t' + str(page_hits[i][1]) + '\n')
+		log.write(str(i) + '\t' + str(page_hits[i][1]) + '\t' + page_hits[i][0] + '\n')
+
+top_hit = page_hits[0][0]
+top_page = wikipedia.page(top_hit)
+top_page_links = top_page.links
+
+print '# of links on', top_hit, '=', len(top_page_links)
+print 'Parsing links...'
 
 print 'Done'
