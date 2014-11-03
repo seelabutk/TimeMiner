@@ -1,0 +1,16 @@
+Proposal Discussion
+11-3-14
+
+Things to consider:
+
+Unique vs cyclical events - Will this system catch repeated events, such as
+    Presidential elections or Christmas?
+
+Cause and effect events - If one event causes another separated by some time
+    interval, will they be clustered together? Should they be clustered
+    together?
+
+Narrow scope - Time wise narrow, ie only analyzing a month/year/event
+    Narrow parameters for analyzation, eg only page views, common words, and
+    common references.
+
