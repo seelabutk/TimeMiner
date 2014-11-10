@@ -1,4 +1,5 @@
 # Pickle files
 *.p
 
-
+# Vim's swap file
+*.swp

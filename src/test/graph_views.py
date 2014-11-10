@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from matplotlib import pyplot, dates as mdates
+from matplotlib import pyplot, dates as mdates, patches
 from datetime import datetime
 import pickle, sys
 
@@ -60,20 +60,28 @@ def graph(name, data, window=5):
 
     # Start graphing
     figure, axis = pyplot.subplots()
-    axis.plot_date(dates, values, 'b-', color='b', alpha=0.25)
     axis.xaxis.set_major_locator(mdates.MonthLocator())
-    axis.xaxis.set_major_formatter(mdates.DateFormatter('%b \'%y'))
+    axis.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
 
-    axis.plot_date(dates, data_sma, 'b-', color='c', alpha=1)
+    data_line = axis.plot_date(dates, values, 'b-', color='blue', alpha=0.5, label='Raw daily views')
+    sma_line = axis.plot_date(dates, data_sma, 'b-', color='cyan', alpha=1, label=str(window)+'-element moving average')
+    data_patch = patches.Patch(color='blue', alpha=0.5, label='Raw daily views')
+    sma_patch  = patches.Patch(color='cyan', label=str(window)+'-element moving average')
     pyplot.ylabel('Views')
+    pyplot.title(name + ' - 2014 daily pageviews')
+    box = axis.get_position()
+    #axis.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    pyplot.legend([data_patch, sma_patch], ['Raw daily views', str(window)+'-element moving average'])
     figure.autofmt_xdate()
-    pyplot.show()
+    figure.set_size_inches(16, 10)
+    save_name = name.replace(' ', '_').lower() + '.png'
+    pyplot.savefig(save_name, format='png', dpi=100)
 
-filename = 'Ebola_virus_disease2014.p'
-name = 'Ebola'
+filenames = ['Ebola_virus_disease2014.p', 'Malaysia_Airlines_Flight_3702014.p', '2014_Winter_Olympics2014.p']
+names = ['Ebola Virus Disease', 'Malaysia Airlines Flight 370', '2014 Winter Olympics']
 window = 7
-print 'Loading ' + filename + '...'
-ebola = load(filename)
-print 'SMA window = ' + str(window)
-print 'Plotting...'
-graph(name, ebola, window)
+for i in range(len(filenames)):
+    print 'Loading ' + filenames[i] + '...'
+    data = load(filenames[i])
+    print 'Plotting...'
+    graph(names[i], data, window)
