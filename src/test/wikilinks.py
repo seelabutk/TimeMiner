@@ -47,6 +47,28 @@ class WikiLinksExtractor:
 		print 'Found ' + str(count) + ' links.'
 		return inlinks
 
+	def getOutLinks(self, title):
+		main_article = wikipedia.page(title)
+		outlinks = set()
+		results = re.finditer('\(' + str(main_article.pageid) + ',', self.contents)
+		for result in results:
+			title_start = self.contents.find('\'', result.start()) + 1
+			title_end = self.contents.find('\',', title_start)
+			title = self.contents[title_start:title_end]
+			outlinks.add(title)
+
+		return outlinks
+	
+
+def extractBackLinks(events):
+	for event in events:
+		inlinks = set(pickle.load(open(event + '_inlink_titles.pickle')))
+		outlinks = set(pickle.load(open(event + '_outlink_titles.pickle')))
+		backlinks = inlinks.intersection(outlinks)
+		pickle.dump(backlinks, open(event + '_backlinks_titles.pickle', 'w'))
+		pprint.pprint(backlinks)
+		print len(backlinks)
+
 def extractInLinkIds():
 	links = WikiLinksExtractor()
 	links.init()
@@ -64,6 +86,16 @@ def extractTitles():
 	pickle.dump(titles, open('olympics_inlink_titles.pickle', 'w'))
 	pprint.pprint(titles)
 
+def extractOutLinkTitles(title, event):
+	extractor = WikiLinksExtractor()
+	extractor.init()
+	outlinks = extractor.getOutLinks(title)
+	pickle.dump(outlinks, open(event + '_outlink_titles.pickle', 'w'))
+	pprint.pprint(outlinks)
+
 if __name__=='__main__':
 	# extractInLinkIds();
-	extractTitles()
+	# extractTitles()
+	extractOutLinkTitles('Malaysia_Airlines_Flight_370', 'mh370')
+	extractOutLinkTitles('2014_Winter_Olympics', 'olympics')
+	extractBackLinks(['ebola', 'mh370', 'olympics'])
