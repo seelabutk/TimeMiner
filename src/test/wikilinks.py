@@ -22,17 +22,15 @@ class WikiLinksExtractor:
 		page_file.close()
 		print 'Finished reading the page info file into memory'
 
-	def getTitle(self, id, fromDB=True):
-		if not fromDB:
-			try:
-				p = wikipedia.page(pageid=id)
-				return p.title
-			except:
-				return ''
-		id_start = self.page_info.find('(' + str(id))
-		title_start = self.page_info.find('\'', id_start) + 1
-		title_end = self.page_info.find('\',', title_start)
-		return self.page_info[title_start:title_end]
+	def getTitle(self, id):
+		try:
+			p = wikipedia.page(pageid=id)
+			return p.title
+		except:
+			id_start = self.page_info.find('(' + str(id))
+			title_start = self.page_info.find('\'', id_start) + 1
+			title_end = self.page_info.find('\',', title_start)
+			return self.page_info[title_start:title_end]
 		
 	def getInLinks(self, title):
 		count = 0
@@ -56,5 +54,16 @@ def extractInLinkIds():
 	pickle.dump(inlinks, open('olympics_inlink_ids.pickle', 'w'))
 	pprint.pprint(inlinks)
 
+def extractTitles():
+	link_ids = pickle.load(open('olympics_inlink_ids.pickle'))
+	titles = []
+	wikilinks = WikiLinksExtractor()
+	wikilinks.init()
+	for id in link_ids:
+		titles.append(wikilinks.getTitle(id))
+	pickle.dump(titles, open('olympics_inlink_titles.pickle', 'w'))
+	pprint.pprint(titles)
+
 if __name__=='__main__':
-	extractInLinkIds();
+	# extractInLinkIds();
+	extractTitles()
