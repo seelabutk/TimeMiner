@@ -1,28 +1,32 @@
 #!/usr/bin/env python
 
-import gzip, glob, pickle
+import gzip, glob, pickle, sys
 from collections import defaultdict
 
 FILE_PATH = '/export/data/dahome/ahota/wiki/pagecount/{YYYY}-{MM}/*.en.gz'
+MONTH = sys.argv[1]
 YEAR = 2014
 
 def get_views(articles, year):
 	
-	result = defaultdict(int)
-	month_strs = [ str(i).zfill(2) for i in range(1, 13) ]
-	for month in month_strs:
-		fname = FILE_PATH.format( YYYY=str(year), MM=month )
-		files = glob.glob(fname)
-		for f in files:
-			try:
-				gz = gzip.open(f).read().split('\n')
-				for line in gz:
-					cols = line.split()
-					if cols[1] in articles:
-						result[ cols[1] ] += cols[2]
-						print cols[1] + ' added ' + cols[2]
+	result = defaultdict(list)
+	fname = FILE_PATH.format( YYYY=str(year), MM=MONTH )
+	files = glob.glob(fname)
+	for f in files:
+		gz = gzip.open(f).read().split('\n')
+		if len(line) < 5:
+			for a in articles:
+				result[a].append(0)
+		for line in gz:
+			cols = line.split()
+			if len(cols) == 4:
+				if cols[1] in articles:
+					result[ cols[1] ].append(cols[2])
+					print MONTH + '-' + str(YEAR) + ': ' + cols[1] + ' added ' + cols[2]
+				else:
+					result[ cols[1] ].append(0)
 	pickle.dump(results, open('results.p', 'wb'))
 
 if __name__ == '__main__':
-	a = ['Ebola_virus_disease']
-	get_views(a, YEAR)
+	articles = pickle.load(open('event_articles.pickle'))
+	get_views(articles, YEAR)
