@@ -28,7 +28,7 @@ def get_views(articles, year):
 				else:
 					result[ cols[1] ].append(0)
 	result_name = str(year) + '-' + MONTH + '.p'
-	pickle.dump(results, open(result_name, 'wb'))
+	pickle.dump(result, open(result_name, 'wb'))
 
 if __name__ == '__main__':
 	articles = pickle.load(open('event_articles.pickle'))
