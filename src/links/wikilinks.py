@@ -23,14 +23,21 @@ class WikiLinksExtractor:
         print 'Finished reading the page info file into memory'
 
     def getTitle(self, id):
-        try:
-            p = wikipedia.page(pageid=id)
-            return p.title
-        except:
-            id_start = self.page_info.find('(' + str(id))
-            title_start = self.page_info.find('\'', id_start) + 1
-            title_end = self.page_info.find('\',', title_start)
-            return self.page_info[title_start:title_end]
+        id_start = self.page_info.find('(' + str(id) + ',')
+        title_start = self.page_info.find('\'', id_start) + 1
+        title_end = self.page_info.find('\',', title_start)
+        return self.page_info[title_start:title_end]
+
+    def getId(self, title):
+        print 'Looking for the ID of ' + title
+        result = self.page_info.find('\'' + title + '\',')
+        if result == -1:
+            return -1
+        id_start = self.page_info.rfind('(', result - 100, result) + 1
+        id_end = self.page_info.find(',', id_start, result)
+        id = self.page_info[id_start:id_end]
+        print self.page_info[id_start-1:id_end+1] 
+        return int(id)
         
     def getInLinks(self, title):
         count = 0
@@ -41,7 +48,7 @@ class WikiLinksExtractor:
             id_end = self.contents.find(',', id_start, result.start())
             id = self.contents[id_start:id_end]
             #title = self.getTitle(id, False)
-            inlinks.add(id)
+            inlinks.add(int(id))
             #print title
             count += 1
         print 'Found ' + str(count) + ' links.'
@@ -55,51 +62,53 @@ class WikiLinksExtractor:
             title_start = self.contents.find('\'', result.start()) + 1
             title_end = self.contents.find('\',', title_start)
             title = self.contents[title_start:title_end]
-            outlinks.add(title)
+            id = self.getId(title)
+            outlinks.add(id)
 
         return outlinks
     
 
 def extractBackLinks(events):
     for event in events:
-        inlinks = set(pickle.load(open(event + '_inlink_titles.pickle')))
-        outlinks = set(pickle.load(open(event + '_outlink_titles.pickle')))
+        inlinks = set(pickle.load(open(event + '_inlink_ids.pickle')))
+        outlinks = set(pickle.load(open(event + '_outlink_ids.pickle')))
         backlinks = inlinks.intersection(outlinks)
-        pickle.dump(backlinks, open(event + '_backlink_titles.pickle', 'w'))
+        pickle.dump(backlinks, open(event + '_backlink_ids.pickle', 'w'))
         pprint.pprint(backlinks)
         print len(backlinks)
 
-def extractInLinkIds(titles, nicknames):
-    links = WikiLinksExtractor()
-    links.init()
+def extractInLinkIds(wikiex, titles, nicknames):
     for i in range(len(titles)):
-        inlinks = links.getInLinks(titles[i])
+        inlinks = wikiex.getInLinks(titles[i])
         pickle.dump(inlinks, open(nicknames[i] + '_inlink_ids.pickle', 'w'))
         pprint.pprint(inlinks)
 
-def extractTitles(nicknames):
+def extractTitles(wikiex, nicknames):
+    counter = 0
     for i in range(len(nicknames)):
-        link_ids = pickle.load(open(nicknames[i] + '_inlink_ids.pickle'))
+        link_ids = pickle.load(open(nicknames[i] + '_backlink_ids.pickle'))
         titles = []
-        wikilinks = WikiLinksExtractor()
-        wikilinks.init()
         for id in link_ids:
-            titles.append(wikilinks.getTitle(id))
-        pickle.dump(titles, open(nicknames[i] + '_inlink_titles.pickle', 'w'))
+            titles.append(wikiex.getTitle(id))
+            sys.stdout.write('%d\r'%counter)
+            sys.stdout.flush()
+            counter += 1
+
+        pickle.dump(titles, open(nicknames[i] + '_backlink_titles.pickle', 'w'))
         pprint.pprint(titles)
 
-def extractOutLinkTitles(titles, nicknames):
+def extractOutLinkIds(wikiex, titles, nicknames):
     for i in range(len(titles)):
-        extractor = WikiLinksExtractor()
-        extractor.init()
-        outlinks = extractor.getOutLinks(titles[i])
-        pickle.dump(outlinks, open(nicknames[i] + '_outlink_titles.pickle', 'w'))
+        outlinks = wikiex.getOutLinks(titles[i])
+        pickle.dump(outlinks, open(nicknames[i] + '_outlink_ids.pickle', 'w'))
         pprint.pprint(outlinks)
 
 if __name__=='__main__':
     nicknames = ['ebola', 'mh370', 'olympics']
     titles = ['Ebola_virus_disease', 'Malaysia_Airlines_Flight_370', '2014_Winter_Olympics']
-    # extractInLinkIds(titles, nicknames);
-    # extractTitles(nicknames)
-    # extractOutLinkTitles(titles, nicknames)
-    extractBackLinks(nicknames)
+    wikiex = WikiLinksExtractor()
+    wikiex.init()
+    # extractInLinkIds(wikiex, titles, nicknames);
+    # extractOutLinkIds(wikiex, titles, nicknames)
+    # extractBackLinks(nicknames)
+    extractTitles(wikiex, nicknames)
