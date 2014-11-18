@@ -27,8 +27,13 @@ def get_views(articles, year):
 					print print_name + ': ' + cols[1] + ' added ' + cols[2]
 				else:
 					result[ cols[1] ].append(0)
-	result_name = str(year) + '-' + MONTH + '.p'
-	pickle.dump(result, open(result_name, 'wb'))
+	result_name = str(year) + '-' + MONTH + '.txt'
+	with open(result_name, 'wb') as out:
+		for k in result.keys():
+			out.write(k + '\n')
+			for v in result[k]:
+				out.write(str(v) + ' ')
+			out.write('\n')
 
 if __name__ == '__main__':
 	articles = pickle.load(open('event_articles.pickle'))
