@@ -1,5 +1,8 @@
-# Pickle files
+# Temp data pickle files
 *.p
+
+# txt files, get_views results
+*.txt
 
 # Vim's swap file
 *.swp

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import gzip, glob, pickle, sys
+import gzip, glob, pickle, sys, os
 from collections import defaultdict
 
 FILE_PATH = '/export/data/dahome/ahota/wiki/pagecount/{YYYY}-{MM}/*.en.gz'
@@ -14,7 +14,8 @@ def get_views(articles, year):
 	files = glob.glob(fname)
 	for f in files:
 		print_name = f[f.rfind('/') + 12:len(f) - 6]
-		gz = gzip.open(f).read().split('\n')
+		gz = os.popen('zcat ' + f).readlines()
+		#gz = gzip.open(f).read().split('\n')
 		if len(gz) < 5:
 			for a in articles:
 				result[a].append(0)
