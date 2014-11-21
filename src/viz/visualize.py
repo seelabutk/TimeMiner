@@ -1,9 +1,36 @@
+#!/usr/bin/env python
+
 # Author: Anand Patil
 # License: MIT License
 
 import matplotlib.pyplot as pl
 import numpy as np
 import pprint
+
+# Calculate the simple moving average for the given data
+def sma(data, window):
+    offset = (window - 1) / 2
+    length = len(data)
+    
+    # Pad the front of the array so it will be graphed correctly
+    result = [None for i in range(offset)]
+    partial_sum = 0
+    
+    # Calculate averages
+    for i in range(offset, length-offset):
+        # Left side, centerpoint, and right side sums
+        partial_sum += sum([data[i - left] for left in range(1, offset + 1)])
+        partial_sum += data[i]
+        partial_sum +=sum([data[i + right] for right in range(1, offset + 1)])
+        # Take average
+        avg = partial_sum / window
+        result.append(avg)
+        partial_sum = 0
+
+    # Pad the end of the array
+    for i in range(offset):
+        result.append(None)
+    return result
 
 def symmetric(sorted_streams, stream_bounds):
     """Symmetric baseline"""
@@ -102,7 +129,7 @@ if __name__ == '__main__':
 
     views = []
     for x in page_views:
-        views.append(x[:743])
+        views.append(sma(x, 7)[:743])
 
     pl.clf()
     T = 72#len(views[0])
