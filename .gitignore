@@ -2,7 +2,7 @@
 *.p
 
 # txt files, get_views results
-*.txt
+#*.txt
 
 # Vim's swap file
 *.swp

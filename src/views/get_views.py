@@ -16,6 +16,7 @@ def get_views(articles, year):
 		print_name = f[f.rfind('/') + 12:len(f) - 6]
 		gz = os.popen('zcat ' + f).readlines()
 		#gz = gzip.open(f).read().split('\n')
+		found = []
 		if len(gz) < 5:
 			for a in articles:
 				result[a].append(0)
@@ -26,8 +27,10 @@ def get_views(articles, year):
 				if cols[1] in articles:
 					result[ cols[1] ].append(cols[2])
 					print print_name + ': ' + cols[1] + ' added ' + cols[2]
-				else:
-					result[ cols[1] ].append(0)
+					found.append(cols[1])
+		for article in articles:
+			if article not in found:
+				result[article].append(0)
 	result_name = str(year) + '-' + MONTH + '.txt'
 	with open(result_name, 'wb') as out:
 		for k in result.keys():
