@@ -6,31 +6,7 @@
 import matplotlib.pyplot as pl
 import numpy as np
 import pprint
-
-# Calculate the simple moving average for the given data
-def sma(data, window):
-    offset = (window - 1) / 2
-    length = len(data)
-    
-    # Pad the front of the array so it will be graphed correctly
-    result = [0 for i in range(offset)]
-    partial_sum = 0
-    
-    # Calculate averages
-    for i in range(offset, length-offset):
-        # Left side, centerpoint, and right side sums
-        partial_sum += sum([data[i - left] for left in range(1, offset + 1)])
-        partial_sum += data[i]
-        partial_sum +=sum([data[i + right] for right in range(1, offset + 1)])
-        # Take average
-        avg = partial_sum / window
-        result.append(avg)
-        partial_sum = 0
-
-    # Pad the end of the array
-    for i in range(offset):
-        result.append(0)
-    return result
+import prepare_data
 
 def symmetric(sorted_streams, stream_bounds):
     """Symmetric baseline"""
@@ -116,20 +92,7 @@ def stacked_graph(streams, cmap=pl.cm.bone, color_seq='linear', baseline_fn=min_
         pl.fill(t_poly, np.hstack((bound[0]-baseline,(bound[1]-baseline)[::-1])), facecolor=color, linewidth=0.,edgecolor='none')
        
 if __name__ == '__main__':
-    f = open('../views/2014-01.txt')
-    contents = f.read()
-    contents = contents.splitlines()
-    str_views = contents[1::2]
-    split_views = [i.split() for i in str_views]
-    page_views = []
-    for line, lst in enumerate(split_views):
-        page_views.append([])
-        for j in lst:
-            page_views[line].append(int(j))
-
-    views = []
-    for x in page_views:
-        views.append(sma(x, 24))
+    views = prepare_data.prepare()
 
     pl.clf()
     T = len(views[0])
