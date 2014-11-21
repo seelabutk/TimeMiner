@@ -13,7 +13,7 @@ def sma(data, window):
     length = len(data)
     
     # Pad the front of the array so it will be graphed correctly
-    result = [None for i in range(offset)]
+    result = [0 for i in range(offset)]
     partial_sum = 0
     
     # Calculate averages
@@ -29,7 +29,7 @@ def sma(data, window):
 
     # Pad the end of the array
     for i in range(offset):
-        result.append(None)
+        result.append(0)
     return result
 
 def symmetric(sorted_streams, stream_bounds):
@@ -129,14 +129,14 @@ if __name__ == '__main__':
 
     views = []
     for x in page_views:
-        views.append(sma(x, 7)[:743])
+        views.append(sma(x, 24))
 
     pl.clf()
-    T = 72#len(views[0])
+    T = len(views[0])
     amp = 1 
     fade = .15
     dsets = []
-    n_views = 10#len(views)
+    n_views = len(views)
     for i in xrange(n_views):
         this_dset = np.zeros(T)
         """
