@@ -1,5 +1,5 @@
 #!/bin/bash
 
-for i in {1..3}; do
+for i in {7..11}; do
 	./get_views.py $i &
 done
