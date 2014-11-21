@@ -6,3 +6,6 @@
 
 # Vim's swap file
 *.swp
+
+# Python .pyc files
+*.pyc
