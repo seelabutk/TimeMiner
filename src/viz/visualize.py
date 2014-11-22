@@ -6,6 +6,7 @@
 import matplotlib.pyplot as pl
 import numpy as np
 import pprint
+import pickle
 import prepare_data
 
 def symmetric(sorted_streams, stream_bounds):
@@ -92,7 +93,8 @@ def stacked_graph(streams, cmap=pl.cm.bone, color_seq='linear', baseline_fn=min_
         pl.fill(t_poly, np.hstack((bound[0]-baseline,(bound[1]-baseline)[::-1])), facecolor=color, linewidth=0.,edgecolor='none')
        
 if __name__ == '__main__':
-    views = prepare_data.prepare()
+    p = pickle.load(open('../links/mh370_backlink_titles.pickle'))
+    views = prepare_data.prepare(p)
 
     pl.clf()
     T = len(views[0])
@@ -117,6 +119,7 @@ if __name__ == '__main__':
         dsets.append(this_dset)
    
     stacked_graph(dsets, baseline_fn = min_weighted_wiggles, color_seq='random')
+    pl.savefig('generated_figure.png')
     pl.show()
 
     

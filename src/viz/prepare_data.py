@@ -1,3 +1,5 @@
+import pickle
+
 # Calculate the simple moving average for the given data
 def sma(data, window):
     offset = (window - 1) / 2
@@ -23,14 +25,23 @@ def sma(data, window):
         result.append(0)
     return result
 
+def filter(contents, event_titles):        
+    results = []
+    for i, line in enumerate(contents):
+        if i % 2 == 0 and line in event_titles:
+            results.append(contents[i + 1])
+    return results
 
-def prepare():
+def prepare(event_titles=[]):
     views = []
     for month in range(1,12):
         f = open('../views/2014-' + str(month).zfill(2) + '.txt')
         contents = f.read()
         contents = contents.splitlines()
-        str_views = contents[1::2]
+        if len(event_titles) == 0:
+            str_views = contents[1::2]
+        else:
+            str_views = filter(contents, event_titles)
         split_views = [i.split() for i in str_views]
 
         page_views = []
@@ -57,4 +68,5 @@ def prepare():
     return results
 
 if __name__=='__main__':
-    prepare()
+    p = pickle.load(open('../links/mh370_backlink_titles.pickle'))
+    prepare(p)
