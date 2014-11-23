@@ -8,6 +8,9 @@ import numpy as np
 import pprint
 import pickle
 import prepare_data
+import pystreamgraph 
+import random
+import colorsys
 
 def symmetric(sorted_streams, stream_bounds):
     """Symmetric baseline"""
@@ -94,8 +97,10 @@ def stacked_graph(streams, cmap=pl.cm.bone, color_seq='linear', baseline_fn=min_
        
 if __name__ == '__main__':
     p = pickle.load(open('../links/mh370_backlink_titles.pickle'))
-    views = prepare_data.prepare(p)
+    views = prepare_data.prepare_for_pystreamgraph(p)
+    escaped_p = [i.encode('string_escape') for i in p[:10]]
 
+    """
     pl.clf()
     T = len(views[0])
     amp = 1 
@@ -104,22 +109,27 @@ if __name__ == '__main__':
     n_views = len(views)
     for i in xrange(n_views):
         this_dset = np.zeros(T)
-        """
+        
         t_onset = np.random.randint(.9*T)-T/3
         if t_onset >= 0:   
             remaining_t = np.arange(T-t_onset)
         else:
             remaining_t = np.arange(T)-t_onset
         # this_dset[max(t_onset,0):]= np.exp(-.15*np.random.gamma(10,.1)*remaining_t) * remaining_t * np.random.gamma(6,.2)
-        """
+        
 
         for j in range(T):
            this_dset[j] = views[i][j]
 
         dsets.append(this_dset)
-   
-    stacked_graph(dsets, baseline_fn = min_weighted_wiggles, color_seq='random')
-    pl.savefig('generated_figure.png')
-    pl.show()
+    """
+    colors = []
+    for article in p[:10]:
+        colors.append(colorsys.hsv_to_rgb(0.588, 0.2, random.uniform(0.4, 0.7)))
+    # stacked_graph(dsets, baseline_fn = min_weighted_wiggles, color_seq='random')
+    sg = pystreamgraph.StreamGraph(views, colors=colors, labels=escaped_p)
+    sg.draw("generated_figure.svg", "MH370 related articles", show_labels=True, width=1800, height=8400)
+    # pl.savefig('generated_figure.png')
+    # pl.show()
 
     
