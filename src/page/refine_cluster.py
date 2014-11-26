@@ -28,6 +28,7 @@ def further_cull(seed, articles):
     return results, words
 
 if __name__ == '__main__':
+    nicknames = {'Ebola_virus_disease': 'ebola', 'Malaysia_Airlines_Flight_370': 'mh370', '2014_Winter_Olympics': 'olympics'}
     clusters = {'Ebola_virus_disease' : pickle.load(open('../links/ebola_backlink_titles.pickle')),
                 'Malaysia_Airlines_Flight_370' : pickle.load(open('../links/mh370_backlink_titles.pickle')),
                 '2014_Winter_Olympics' : pickle.load(open('../links/olympics_backlink_titles.pickle'))
@@ -38,6 +39,8 @@ if __name__ == '__main__':
         event_word_counter = Counter(event_words)
         event_word_sorted = event_word_counter.most_common(4)
         print 'Event words for ' + seed + ':'
-        pprint.pprint([word[0] for word in event_word_sorted])
+        this_event_words = [word[0] for word in event_word_sorted]
+        pprint.pprint(this_event_words)
         print seed + ' final_cluster length = ' + str(len(final_cluster))
-
+        pickle.dump(final_cluster, open(nicknames[seed] + '_cluster.pickle', 'w'))
+        pickle.dump(this_event_words, open(nicknames[seed] + '_event_words.pickle', 'w'))

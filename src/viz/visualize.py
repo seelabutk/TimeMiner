@@ -133,14 +133,16 @@ def viz_with_pystreamgraph():
     # pl.show()
 
 if __name__ == '__main__':
-    p = pickle.load(open('../links/mh370_backlink_titles.pickle'));
-    views = prepare_data.prepare(p)
-    v = np.array(views)
-    v2 = np.rot90(v.copy(),-1)
-    template = open('streamgraph.js/template.tpl')
-    t = template.read()
-    t = t.replace("<DATA>", str(v2.tolist()))
-    t = t.replace("<TITLES>", str(p))
-    h = open("streamgraph.js/data/visualize.js", "w")
-    h.write(t)
-    h.close()
+    nicknames = ['olympics', 'mh370', 'ebola']
+    for nickname in nicknames:
+        p = pickle.load(open('../page/' + nickname + '_cluster.pickle'))
+        views = prepare_data.prepare(p)
+        v = np.array(views)
+        v2 = np.fliplr(np.rot90(v.copy(),-1))
+        template = open('streamgraph.js/template.tpl')
+        t = template.read()
+        t = t.replace("<DATA>", str(v2.tolist()))
+        t = t.replace("<TITLES>", str(p))
+        h = open('streamgraph.js/data/' + nickname + '.js', "w")
+        h.write(t)
+        h.close()
