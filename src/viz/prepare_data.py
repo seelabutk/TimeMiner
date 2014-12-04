@@ -39,10 +39,11 @@ def prepare(event_titles=[]):
         f = open('../views/2014-' + str(month).zfill(2) + '.txt')
         contents = f.read()
         contents = contents.splitlines()
-        if len(event_titles) == 0:
-            str_views = contents[1::2]
-        else:
-            str_views = filter(contents, event_titles)
+        str_views = []
+        for title in event_titles:
+            t_index = contents.index(title)
+            str_views.append(contents[t_index + 1])
+        
         split_views = [i.split() for i in str_views]
 
         page_views = []

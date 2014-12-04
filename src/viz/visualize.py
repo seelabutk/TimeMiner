@@ -95,7 +95,7 @@ def stacked_graph(streams, cmap=pl.cm.bone, color_seq='linear', baseline_fn=min_
         color = cmap(colors[i])
         pl.fill(t_poly, np.hstack((bound[0]-baseline,(bound[1]-baseline)[::-1])), facecolor=color, linewidth=0.,edgecolor='none')
        
-if __name__ == '__main__':
+def viz_with_pystreamgraph():
     p = pickle.load(open('../links/mh370_backlink_titles.pickle'))
     views = prepare_data.prepare_for_pystreamgraph(p)
     escaped_p = [i.encode('string_escape') for i in p[:10]]
@@ -132,4 +132,17 @@ if __name__ == '__main__':
     # pl.savefig('generated_figure.png')
     # pl.show()
 
-    
+if __name__ == '__main__':
+    nicknames = ['olympics', 'mh370', 'ebola']
+    for nickname in nicknames:
+        p = pickle.load(open('../page/' + nickname + '_cluster.pickle'))
+        views = prepare_data.prepare(p)
+        v = np.array(views)
+        v2 = np.fliplr(np.rot90(v.copy(),-1))
+        template = open('streamgraph.js/template.tpl')
+        t = template.read()
+        t = t.replace("<DATA>", str(v2.tolist()))
+        t = t.replace("<TITLES>", str(p))
+        h = open('streamgraph.js/data/' + nickname + '.js', "w")
+        h.write(t)
+        h.close()

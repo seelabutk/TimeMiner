@@ -1,7 +1,7 @@
 TimeMiner
 =========
 
-Final project to get historic events from Wikipedia
+A project that extracts and visualizes events from Wikipedia
 
 Time Miner will analyze Wikipedia article edits over time to generate a
 timeline of events. This would also highlight some of the collateral effects
