@@ -4,6 +4,7 @@ import pprint
 import wikipedia
 import pickle
 
+# Extracts inlinks, outlinks, backlinks and their titles from a Wikipedia pagelinks file and page file
 class WikiLinksExtractor:
     insert_pattern=r"""\([0-9]*,0,(\\[\'\"])(?:\\\\\1|.)*?\1,[0-9]*\)"""
     pagelinks_filename = 'enwiki-20141008-pagelinks.sql'
@@ -67,7 +68,7 @@ class WikiLinksExtractor:
 
         return outlinks
     
-
+# Extracts backlinks by intersecting inlinks and outlinks
 def extractBackLinks(events):
     for event in events:
         inlinks = set(pickle.load(open(event + '_inlink_ids.pickle')))
@@ -83,6 +84,7 @@ def extractInLinkIds(wikiex, titles, nicknames):
         pickle.dump(inlinks, open(nicknames[i] + '_inlink_ids.pickle', 'w'))
         pprint.pprint(inlinks)
 
+# Extracts the titles of backlinked articles that are saved in the backlinks file
 def extractTitles(wikiex, nicknames):
     counter = 0
     for i in range(len(nicknames)):
